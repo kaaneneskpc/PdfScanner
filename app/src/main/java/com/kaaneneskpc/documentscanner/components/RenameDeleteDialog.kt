@@ -22,16 +22,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaaneneskpc.documentscanner.presentation.pdf.PdfViewModel
+import com.kaaneneskpc.documentscanner.utils.deleteFile
+import com.kaaneneskpc.documentscanner.utils.renameFile
+import java.util.Date
 
 @Composable
 fun RenameDeleteDialog(pdfViewModel: PdfViewModel = hiltViewModel()) {
-    var newNameText by remember { mutableStateOf("") }
+
+    var newNameText by remember(pdfViewModel.currentPdf) { mutableStateOf(pdfViewModel.currentPdf?.name.orEmpty()) }
     val showRenameDialog by pdfViewModel.showRenameDialog.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
     if (showRenameDialog) {
         Dialog(onDismissRequest = { pdfViewModel.onHideRenameDialog() }) {
             Surface(
@@ -50,7 +57,14 @@ fun RenameDeleteDialog(pdfViewModel: PdfViewModel = hiltViewModel()) {
                         label = { Text("Pdf Name") })
                     Spacer(modifier = Modifier.height(8.dp))
                     Row {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = {
+                            pdfViewModel.currentPdf?.let {
+                                pdfViewModel.onHideRenameDialog()
+                                if (deleteFile(context, it.name.orEmpty())) {
+                                    pdfViewModel.deletePdf(it)
+                                }
+                            }
+                        }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Delete",
@@ -58,11 +72,23 @@ fun RenameDeleteDialog(pdfViewModel: PdfViewModel = hiltViewModel()) {
                             )
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        Button(onClick = { /*TODO*/ }) {
+                        Button(onClick = { pdfViewModel.onHideRenameDialog() }) {
                             Text(text = "Cancel")
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        Button(onClick = { /*TODO*/ }) {
+                        Button(onClick = {
+                            pdfViewModel.currentPdf?.let {
+                                if (!it.name.equals(newNameText, true)) {
+                                    pdfViewModel.onHideRenameDialog()
+                                    renameFile(context, it.name.orEmpty(), newNameText)
+                                    val updateFile =
+                                        it.copy(name = newNameText, lastModifiedTime = Date())
+                                    pdfViewModel.updatePdf(updateFile)
+                                } else {
+                                    pdfViewModel.onHideRenameDialog()
+                                }
+                            }
+                        }) {
                             Text(text = "Update")
                         }
                     }

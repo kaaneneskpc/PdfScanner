@@ -70,7 +70,10 @@ fun PdfItem(pdf: Pdf, pdfViewModel: PdfViewModel = hiltViewModel()) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(text = "Size: ${pdf.size}", style = MaterialTheme.typography.bodyMedium)
             }
-            IconButton(onClick = { pdfViewModel.onShowRenameDialog() }) {
+            IconButton(onClick = {
+                pdfViewModel.currentPdf = pdf
+                pdfViewModel.onShowRenameDialog()
+            }) {
                 Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Icon")
             }
         }
