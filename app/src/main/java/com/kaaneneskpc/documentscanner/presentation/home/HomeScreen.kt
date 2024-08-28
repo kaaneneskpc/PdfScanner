@@ -32,6 +32,7 @@ import com.kaaneneskpc.documentscanner.data.model.Pdf
 import com.kaaneneskpc.documentscanner.components.PdfItem
 import com.kaaneneskpc.documentscanner.components.RenameDeleteDialog
 import com.kaaneneskpc.documentscanner.presentation.pdf.PdfViewModel
+import com.kaaneneskpc.documentscanner.utils.copyPdfFileToAppDirectory
 import com.kaaneneskpc.documentscanner.utils.showToast
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -58,6 +59,9 @@ fun HomeScreen() {
                         "dd-MMM-yyyy HH:mm:ss",
                         Locale.getDefault()
                     ).format(date) + ".pdf"
+
+                    copyPdfFileToAppDirectory(context, pdf.uri, fileName)
+
                     val pdfItem = Pdf(UUID.randomUUID().toString(), fileName, "10 KB", date)
                     pdfList.add(pdfItem)
                     context.showToast("Success")

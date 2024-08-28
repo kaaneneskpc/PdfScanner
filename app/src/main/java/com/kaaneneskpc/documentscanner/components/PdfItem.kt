@@ -1,5 +1,7 @@
 package com.kaaneneskpc.documentscanner.components
 
+import android.app.Activity
+import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,19 +23,29 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kaaneneskpc.documentscanner.data.model.Pdf
 import com.kaaneneskpc.documentscanner.presentation.pdf.PdfViewModel
+import com.kaaneneskpc.documentscanner.utils.getFileUri
 
 @Composable
 fun PdfItem(pdf: Pdf, pdfViewModel: PdfViewModel = hiltViewModel()) {
+    val context = LocalContext.current
+    val activity = LocalContext.current as Activity
     Card(
         modifier = Modifier
             .padding(10.dp)
             .wrapContentHeight()
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        onClick = {
+            val getFileUri = getFileUri(context, pdf.name.orEmpty())
+            val browserIntent = Intent(Intent.ACTION_VIEW, getFileUri)
+            browserIntent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            activity.startActivity(browserIntent)
+        }
     ) {
         Row(
             modifier = Modifier
