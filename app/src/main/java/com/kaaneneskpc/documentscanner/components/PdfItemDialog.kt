@@ -30,10 +30,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaaneneskpc.documentscanner.presentation.pdf.PdfViewModel
+import com.kaaneneskpc.documentscanner.presentation.home.PdfViewModel
 import com.kaaneneskpc.documentscanner.utils.deleteFile
 import com.kaaneneskpc.documentscanner.utils.getFileUri
 import com.kaaneneskpc.documentscanner.utils.renameFile
+import com.kaaneneskpc.documentscanner.utils.showToast
 import java.util.Date
 
 @Composable
@@ -90,6 +91,8 @@ fun PdfItemDialog(pdfViewModel: PdfViewModel = hiltViewModel()) {
                                 pdfViewModel.onHideRenameDialog()
                                 if (deleteFile(context, it.name.orEmpty())) {
                                     pdfViewModel.deletePdf(it)
+                                } else {
+                                    context.showToast("Failed to delete file")
                                 }
                             }
                         }) {
@@ -114,6 +117,7 @@ fun PdfItemDialog(pdfViewModel: PdfViewModel = hiltViewModel()) {
                                     pdfViewModel.updatePdf(updateFile)
                                 } else {
                                     pdfViewModel.onHideRenameDialog()
+                                    context.showToast("Please enter a different name")
                                 }
                             }
                         }) {

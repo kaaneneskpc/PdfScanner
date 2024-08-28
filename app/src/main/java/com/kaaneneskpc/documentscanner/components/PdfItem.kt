@@ -28,7 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kaaneneskpc.documentscanner.data.model.Pdf
-import com.kaaneneskpc.documentscanner.presentation.pdf.PdfViewModel
+import com.kaaneneskpc.documentscanner.presentation.home.PdfViewModel
 import com.kaaneneskpc.documentscanner.utils.getFileUri
 import java.text.SimpleDateFormat
 import java.util.Locale
