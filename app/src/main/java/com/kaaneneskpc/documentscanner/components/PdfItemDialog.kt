@@ -1,5 +1,7 @@
 package com.kaaneneskpc.documentscanner.components
 
+import android.content.ClipData
+import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,11 +32,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaaneneskpc.documentscanner.presentation.pdf.PdfViewModel
 import com.kaaneneskpc.documentscanner.utils.deleteFile
+import com.kaaneneskpc.documentscanner.utils.getFileUri
 import com.kaaneneskpc.documentscanner.utils.renameFile
 import java.util.Date
 
 @Composable
-fun RenameDeleteDialog(pdfViewModel: PdfViewModel = hiltViewModel()) {
+fun PdfItemDialog(pdfViewModel: PdfViewModel = hiltViewModel()) {
 
     var newNameText by remember(pdfViewModel.currentPdf) { mutableStateOf(pdfViewModel.currentPdf?.name.orEmpty()) }
     val showRenameDialog by pdfViewModel.showRenameDialog.collectAsStateWithLifecycle()
@@ -57,6 +61,30 @@ fun RenameDeleteDialog(pdfViewModel: PdfViewModel = hiltViewModel()) {
                         label = { Text("Pdf Name") })
                     Spacer(modifier = Modifier.height(8.dp))
                     Row {
+                        IconButton(onClick = {
+                            pdfViewModel.currentPdf?.let {
+                                pdfViewModel.onHideRenameDialog()
+                                val fileUri = getFileUri(context, it.name.orEmpty())
+                                val shareIntent = Intent(Intent.ACTION_SEND)
+                                shareIntent.type = "application/pdf"
+                                shareIntent.clipData = ClipData.newRawUri("", fileUri)
+                                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
+                                shareIntent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                context.startActivity(
+                                    Intent.createChooser(
+                                        shareIntent,
+                                        "Share Pdf"
+                                    )
+                                )
+
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = "Share",
+                                tint = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        }
                         IconButton(onClick = {
                             pdfViewModel.currentPdf?.let {
                                 pdfViewModel.onHideRenameDialog()

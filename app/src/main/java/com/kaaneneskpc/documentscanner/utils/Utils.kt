@@ -34,3 +34,15 @@ fun renameFile(context: Context, oldFileName: String, newFileName: String) {
     val newFile = File(context.filesDir, newFileName)
     oldFile.renameTo(newFile)
 }
+
+fun getFileSize(context: Context, fileName: String): String {
+    val file = File(context.filesDir, fileName)
+    val fileSizeByte = file.length()
+    val fileSizeKB = fileSizeByte / 1024
+    return if (fileSizeKB > 1024) {
+        val fileSizeMB = fileSizeKB / 1024
+        "$fileSizeMB MB"
+    } else {
+        "$fileSizeKB KB"
+    }
+}

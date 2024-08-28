@@ -31,9 +31,10 @@ import com.kaaneneskpc.documentscanner.components.ErrorScreen
 import com.kaaneneskpc.documentscanner.components.LoadingScreen
 import com.kaaneneskpc.documentscanner.data.model.Pdf
 import com.kaaneneskpc.documentscanner.components.PdfItem
-import com.kaaneneskpc.documentscanner.components.RenameDeleteDialog
+import com.kaaneneskpc.documentscanner.components.PdfItemDialog
 import com.kaaneneskpc.documentscanner.presentation.pdf.PdfViewModel
 import com.kaaneneskpc.documentscanner.utils.copyPdfFileToAppDirectory
+import com.kaaneneskpc.documentscanner.utils.getFileSize
 import com.kaaneneskpc.documentscanner.utils.showToast
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -47,7 +48,7 @@ fun HomeScreen() {
     val context = LocalContext.current
     val pdfViewModel = hiltViewModel<PdfViewModel>()
     val pdfList by pdfViewModel.pdfState.collectAsStateWithLifecycle()
-    RenameDeleteDialog(pdfViewModel)
+    PdfItemDialog(pdfViewModel)
     LoadingScreen(pdfViewModel)
     val scanLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartIntentSenderForResult()) {
@@ -63,7 +64,7 @@ fun HomeScreen() {
 
                     copyPdfFileToAppDirectory(context, pdf.uri, fileName)
 
-                    val pdfItem = Pdf(UUID.randomUUID().toString(), fileName, "10 KB", date)
+                    val pdfItem = Pdf(UUID.randomUUID().toString(), fileName, getFileSize(context, fileName), date)
                     context.showToast("Success")
                     pdfViewModel.insertPdf(pdfItem)
                 }

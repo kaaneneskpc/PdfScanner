@@ -30,6 +30,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.kaaneneskpc.documentscanner.data.model.Pdf
 import com.kaaneneskpc.documentscanner.presentation.pdf.PdfViewModel
 import com.kaaneneskpc.documentscanner.utils.getFileUri
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun PdfItem(pdf: Pdf, pdfViewModel: PdfViewModel = hiltViewModel()) {
@@ -62,13 +64,21 @@ fun PdfItem(pdf: Pdf, pdfViewModel: PdfViewModel = hiltViewModel()) {
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = pdf.name.orEmpty(),
+                    text = "Title: ${pdf.name.orEmpty()}",
                     style = MaterialTheme.typography.bodyLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(text = "Size: ${pdf.size}", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = "Date:${
+                        SimpleDateFormat(
+                            "dd-MMM-yyyy HH:mm:ss a",
+                            Locale.getDefault()
+                        ).format(pdf.lastModifiedTime)
+                    }", style = MaterialTheme.typography.bodyMedium
+                )
             }
             IconButton(onClick = {
                 pdfViewModel.currentPdf = pdf
